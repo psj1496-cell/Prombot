@@ -524,14 +524,18 @@ function processWildcard(prompt) {
 }
 
 function formatPrompt(prompt) {
-    prompt = prompt.replaceAll('\n', ',') + ",";
-
+    // 1. 엔터를 쉼표로 바꾸던 개짓거리(replaceAll) 삭제
+    // 2. trim()으로 공백 지우던 로직 삭제
+    
     let arr = [];
-
     let buffer = "";
+    
     for (let i = 0; i < prompt.length; i++) {
-        if (prompt[i] == ',' || prompt[i] == '{' || prompt[i] == '}' || prompt[i] == '[' || prompt[i] == ']' || prompt[i] == '|' || prompt[i] == '<' || prompt[i] == '>' || prompt[i] == '~') {
-            arr.push(buffer.trim());
+        // 특수문자 기준으로 쪼개는 건 유지하되, 공백은 건드리지 않음
+        const specialChars = [',', '{', '}', '[', ']', '|', '<', '>', '~'];
+        
+        if (specialChars.includes(prompt[i])) {
+            arr.push(buffer); // 여기서 .trim()을 빼버려야 공백이 살아남음
             arr.push(prompt[i]);
             buffer = "";
         }
@@ -539,15 +543,13 @@ function formatPrompt(prompt) {
             buffer += prompt[i];
         }
     }
+    
+    if (buffer) arr.push(buffer);
 
-    arr = arr.filter((el) => {
-        return el != "";
-    });
-
-    arr = arr.join('');
-
-    return arr;
+    // 빈 문자열만 걸러내고 그대로 합침
+    return arr.filter(el => el !== "").join('');
 }
+
 
 function processDynamicPrompt(prompt) {
     let bcount = 0;
