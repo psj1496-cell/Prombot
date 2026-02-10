@@ -294,10 +294,6 @@ class Tokenizer {
         this.#tokens = [];
         if (str != undefined)
             this.tokenize(str);
-
-        this.#tokens = this.#tokens.filter((el) => {
-            return el.str.trim() != "";
-        });
     }
 
     add(str, strength) {
